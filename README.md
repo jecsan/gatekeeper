@@ -3,7 +3,7 @@
 
 #### Save user credentials
 ``` kotlin
-  GateKeeper.login(account: Account, password: String?, authToken: String, userData: Bundle) 
+  GateKeeper.login(account: Account, password: String?, authToken: String, userData: Bundle?) 
   ```
 #### Clear saved user credentials
 ``` kotlin
