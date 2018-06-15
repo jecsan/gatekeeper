@@ -1,5 +1,5 @@
 # GateKeeper
- Save user credentials easier with AccountManager + Authenticator 
+ Easier account management. 
 
 #### Save user credentials
 ``` kotlin
