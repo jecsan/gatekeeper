@@ -29,7 +29,14 @@ In your strings.xml, add the following string:
     <string name="account_type">you_app_name</string>
 ```
 In your Application class, implement the Gate class and provide the activity that you will use for authentication/login.
+```kotlin
+class SampleApp : Application(), Gate {
+    override fun getGateClass(): Class<*> {
+        return LoginActivity::class.java
+    }
+}
 
+```
 
 
 #### Note: Please do not store plaintext passwords, or do not store password at all.
