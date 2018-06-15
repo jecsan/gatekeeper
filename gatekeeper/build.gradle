@@ -1,0 +1,68 @@
+apply plugin: 'com.android.library'
+
+apply plugin: 'kotlin-android'
+
+apply plugin: 'kotlin-android-extensions'
+
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'gatekeeper'
+
+    publishedGroupId = 'com.greyblocks'
+    libraryName = 'gatekeeper'
+    artifact = 'gatekeeper'
+
+    libraryDescription = 'A wrapper for android authentication + account manager'
+
+    siteUrl = 'https://github.com/jecsan/gatekeeper'
+    gitUrl = 'https://github.com/jecsan/gatekeeper.git'
+
+    libraryVersion = '0.1.1'
+
+    developerId = 'dyoed'
+    developerName = 'Jose S'
+    developerEmail = 'santiagojoed@gmail.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    testOptions{
+        unitTests.returnDefaultValues = true
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'com.android.support:appcompat-v7:28.0.0-alpha3'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    testImplementation 'org.mockito:mockito-core:2.18.3'
+    androidTestImplementation 'org.mockito:mockito-android:2.18.3'
+
+}
+
+tasks.withType(Javadoc).all {
+    enabled = false
+}
+
+apply from: 'https://raw.githubusercontent.com/jecsan/android-dependency-deployment/master/install_dependency.gradle'
+apply from: 'https://raw.githubusercontent.com/jecsan/android-dependency-deployment/master/bintray.gradle'

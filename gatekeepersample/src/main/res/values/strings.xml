@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">GateKeeperSample</string>
+    <string name="account_type">gatekeeper_impl</string>
+</resources>
