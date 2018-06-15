@@ -12,8 +12,9 @@
 ## Usage
 ```groovy
     dependencies{
-    ..
+    
       implementation 'com.greyblocks:gatekeeper:0.1.2'
+      
     }
   
    ```
