@@ -3,6 +3,7 @@ package com.greyblocks.gatekeeper
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.SharedPreferences
+import android.os.Handler
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
@@ -43,7 +44,7 @@ open class ExampleUnitTest {
     @Test
     fun testLoginCheckExistingAccount() {
 
-        val gateKeeper = GateKeeper(accountManager, sharedPreferences, accountType)
+        val gateKeeper = GateKeeper(accountManager, sharedPreferences, accountType, Handler())
         gateKeeper.login(Account("joed", accountType), null, authToken, null)
         Mockito.verify(accountManager, Mockito.atLeastOnce()).getAccountsByType(accountType)
     }
