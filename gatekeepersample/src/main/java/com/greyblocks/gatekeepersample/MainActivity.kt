@@ -19,6 +19,8 @@ class MainActivity : AppCompatActivity() {
         gateKeeper = GateKeeper(AccountManager.get(this),PreferenceManager.getDefaultSharedPreferences(this),
                 getString(R.string.account_type), Handler(Looper.getMainLooper()))
 
+        userTv.text = "Logged in as ${gateKeeper.getCurrentAccount()?.name}\n\n AuthToken: ${gateKeeper.getAuthToken()}"
+
         logoutBtn.setOnClickListener {
             gateKeeper.logout()
             gateKeeper.checkUserAuth(this)
