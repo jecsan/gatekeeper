@@ -11,9 +11,18 @@
 ```
 ## Usage
 ```groovy
-    maven{ url 'https://dl.bintray.com/dyoed/maven/' }
+    repositories {
+        ...
+        maven{
+            url 'https://dl.bintray.com/dyoed/maven/'
+        }
+    }
     
-    implementation 'com.greyblocks:gatekeeper:0.1.2'
+    dependencies{
+    ...
+      implementation 'com.greyblocks:gatekeeper:0.1.2'
+    }
+  
    ```
 In your strings.xml, add the following string:
 ```xml
