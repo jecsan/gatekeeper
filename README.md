@@ -11,13 +11,6 @@
 ```
 ## Usage
 ```groovy
-    repositories {
-        ..
-        maven{
-            url 'https://dl.bintray.com/dyoed/maven/'
-        }
-    }
-    
     dependencies{
     ..
       implementation 'com.greyblocks:gatekeeper:0.1.2'
