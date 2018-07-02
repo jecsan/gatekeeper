@@ -6,10 +6,10 @@ import android.app.Activity
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 
 open class GateKeeper(private val accountManager: AccountManager, private val sharedPreferences: SharedPreferences,
-                      private val accountType: String, private val handler: Handler) {
+                      private val accountType: String) {
+
 
     fun getCurrentAccount(): Account? {
         val accounts = accountManager.getAccountsByType(accountType)
@@ -24,11 +24,12 @@ open class GateKeeper(private val accountManager: AccountManager, private val sh
         return account?.let { accountManager.peekAuthToken(getCurrentAccount(), AccountAuthenticator.AUTHTOKEN_TYPE_FULL_ACCESS) }
     }
 
-    fun login(account: Account, password: String?, authToken: String, userData: Bundle? = null) {
+
+    fun enter(user :String, password: String?, authToken: String, userData: Bundle? = null) {
         if (getCurrentAccount() != null) {
             logout()
         }
-        accountManager.addAccountExplicitly(account, password, userData)
+        accountManager.addAccountExplicitly(Account(user,accountType), password, userData)
         accountManager.setAuthToken(getCurrentAccount(), AccountAuthenticator.AUTHTOKEN_TYPE_FULL_ACCESS, authToken)
     }
 

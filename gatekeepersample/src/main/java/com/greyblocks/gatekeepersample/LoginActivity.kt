@@ -1,6 +1,5 @@
 package com.greyblocks.gatekeepersample
 
-import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Intent
 import android.os.Bundle
@@ -21,14 +20,14 @@ class LoginActivity : AppCompatActivity() {
         loginBtn.setOnClickListener {
             if(userNameInput.getText().isNotEmpty() && passwordInput.getText().isNotEmpty()){
                 val gateKeeper = GateKeeper(AccountManager.get(this), PreferenceManager.getDefaultSharedPreferences(this),
-                        getString(R.string.account_type), Handler(Looper.getMainLooper()))
+                        getString(R.string.account_type))
 
                 //Let's assume we sent the credentials to the API and it returned 200
                 loginBtn.isEnabled = false
                 //Note: Password is nullable, and it is advisable not to save any password
                 //If you really need to save it, atleast encrypt before saving
                 Handler(Looper.getMainLooper()).postDelayed({
-                    gateKeeper.login(Account(userNameInput.getText(),getString(R.string.account_type)),passwordInput.getText(),
+                    gateKeeper.enter(userNameInput.getText(),passwordInput.getText(),
                             "someauthtoken_skdfksdgfjsd")
 
                     startActivity(Intent(this, MainActivity::class.java))
