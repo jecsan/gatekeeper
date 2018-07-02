@@ -3,7 +3,7 @@
 
 #### Save user credentials
 ``` kotlin
-  GateKeeper.login(account: Account, password: String?, authToken: String, userData: Bundle?) 
+  GateKeeper.enter(accountName: String, password: String?, authToken: String, userData: Bundle?) 
   ```
 #### Clear saved user credentials
 ``` kotlin
@@ -13,7 +13,7 @@
 ```groovy
     dependencies{
     
-      implementation 'com.greyblocks:gatekeeper:0.1.2'
+      implementation 'com.greyblocks:gatekeeper:0.1.3'
       
     }
   
@@ -22,6 +22,19 @@ In your strings.xml, add the following string:
 ```xml
     <string name="account_type">you_app_name</string>
 ```
+#### Optional - For supporting multiple app installs
+``` groovy
+    debug{
+            ....
+            resValue "string", "account_type", "debug_account_type_here"
+        }
+    release{
+            ....
+            resValue "string", "account_type", "release_account_type_here"
+        }
+```
+
+
 In your Application class, implement the Gate class and provide the activity that you will use for authentication/login.
 ```kotlin
 class SampleApp : Application(), Gate {
