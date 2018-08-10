@@ -3,6 +3,7 @@ package com.greyblocks.gatekeeper
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.SharedPreferences
+import android.os.Bundle
 import android.os.Handler
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -27,8 +28,7 @@ open class ExampleUnitTest {
 
     @Mock
     lateinit var accountManager: AccountManager
-    @Mock
-    lateinit var sharedPreferences: SharedPreferences
+
 
     val accountType = "test_account"
     val authToken = "abcd"
@@ -44,8 +44,8 @@ open class ExampleUnitTest {
     @Test
     fun testLoginCheckExistingAccount() {
 
-        val gateKeeper = GateKeeper(accountManager, sharedPreferences, accountType, Handler())
-        gateKeeper.login(Account("joed", accountType), null, authToken, null)
+        val gateKeeper = GateKeeper(accountManager, accountType)
+        gateKeeper.enter("Joed", accountType, authToken, Bundle())
         Mockito.verify(accountManager, Mockito.atLeastOnce()).getAccountsByType(accountType)
     }
 
@@ -54,9 +54,9 @@ open class ExampleUnitTest {
 
 //        Mockito.`when`(accountManager.peekAuthToken(Account(existingAccountName,accountType),AccountAuthenticator.AUTHTOKEN_TYPE_FULL_ACCESS)).thenReturn(authToken)
 //
-//        val gateKeeper = GateKeeper(accountManager,sharedPreferences,accountType)
+//        val gateKeeper = GateKeeper(accountManager,accountType)
 //
-//        gateKeeper.login(Account("joed", accountType), null, authToken, null)
+//        gateKeeper.enter("Joed", accountType, authToken, Bundle())
 //        Mockito.verify(accountManager,Mockito.atLeastOnce()).invalidateAuthToken(accountType,authToken)
     }
 }
