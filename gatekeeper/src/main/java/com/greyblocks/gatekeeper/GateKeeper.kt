@@ -50,14 +50,15 @@ open class GateKeeper(private val accountManager: AccountManager,
     }
 
     fun getLong(key: String): Long {
-        return accountManager.getUserData(getCurrentAccount(), key).toLongOrNull() ?: 0L
+        return accountManager.getUserData(getCurrentAccount(), key)?.toLongOrNull() ?: 0L
     }
 
     fun getInt(key: String): Int {
-        return accountManager.getUserData(getCurrentAccount(), key).toIntOrNull() ?: 0
+        return accountManager.getUserData(getCurrentAccount(), key)?.toIntOrNull() ?: 0
     }
 
     fun logout() {
+
         if (getCurrentAccount() != null) {
             accountManager.invalidateAuthToken(accountType, getAuthToken())
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
