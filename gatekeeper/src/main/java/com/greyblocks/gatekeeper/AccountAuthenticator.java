@@ -19,7 +19,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
     private static final String AUTHTOKEN_TYPE_READ_ONLY = "authtoken_type_read_only";
     static final String AUTHTOKEN_TYPE_FULL_ACCESS = "authtoken_type_full_access";
 
-    private Context context;
+    private final Context context;
     final private Class<?> loginActivityClass;
 
     AccountAuthenticator(Context context) {

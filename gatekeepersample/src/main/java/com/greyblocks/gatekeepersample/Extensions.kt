@@ -1,6 +1,6 @@
 package com.greyblocks.gatekeepersample
 
-import android.support.design.widget.TextInputLayout
+import com.google.android.material.textfield.TextInputLayout
 
 
 fun TextInputLayout.getText() :String{

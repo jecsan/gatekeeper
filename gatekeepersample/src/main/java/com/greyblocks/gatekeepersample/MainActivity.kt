@@ -2,7 +2,7 @@ package com.greyblocks.gatekeepersample
 
 import android.accounts.AccountManager
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.greyblocks.gatekeeper.GateKeeper
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -31,8 +31,6 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    class MyUser(var name:String, var phone: String){
-
-    }
+    class MyUser(var name:String, var phone: String)
 
 }

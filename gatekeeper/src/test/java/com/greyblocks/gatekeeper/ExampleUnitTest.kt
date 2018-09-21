@@ -2,21 +2,12 @@ package com.greyblocks.gatekeeper
 
 import android.accounts.Account
 import android.accounts.AccountManager
-import android.content.SharedPreferences
 import android.os.Bundle
-import android.os.Handler
-import org.junit.Assert.assertEquals
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
-import org.mockito.junit.MockitoJUnit
-import org.mockito.stubbing.Answer
-import org.mockito.verification.VerificationMode
-import java.util.*
-
 
 
 /**
