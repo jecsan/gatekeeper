@@ -13,7 +13,7 @@
 ```groovy
     dependencies{
     
-      implementation 'com.greyblocks:gatekeeper:0.1.3'
+      implementation 'com.greyblocks:gatekeeper:0.1.8'
       
     }
   
