@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">GateKeeper</string>
+    <string name="pp_name">GateKeeper</string>
     <string name="account_type">gatekeeper</string>
 </resources>

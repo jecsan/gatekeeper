@@ -3,13 +3,15 @@ package com.greyblocks.gatekeeper
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.app.Activity
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 
 @Suppress("unused")
-open class GateKeeper(private val accountManager: AccountManager,
-                      private val accountType: String) {
+open class GateKeeper(context: Context) {
 
+    private val accountManager: AccountManager = AccountManager.get(context)
+    private val accountType : String = context.getString(R.string.account_type)
 
     fun getCurrentAccount(): Account? {
         val accounts = accountManager.getAccountsByType(accountType)

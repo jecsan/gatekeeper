@@ -13,8 +13,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        gateKeeper = GateKeeper(AccountManager.get(this),
-                getString(R.string.account_type))
+        gateKeeper = GateKeeper(application)
 
         userTv.text = "Logged in as ${gateKeeper.getCurrentAccount()?.name}\n\n AuthToken: ${gateKeeper.getAuthToken()}"
 

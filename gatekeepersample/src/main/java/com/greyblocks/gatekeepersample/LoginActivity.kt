@@ -18,8 +18,7 @@ class LoginActivity : AppCompatActivity() {
 
         loginBtn.setOnClickListener {
             if(userNameInput.getText().isNotEmpty() && passwordInput.getText().isNotEmpty()){
-                val gateKeeper = GateKeeper(AccountManager.get(this),
-                        getString(R.string.account_type))
+                val gateKeeper = GateKeeper(application)
 
                 //Let's assume we sent the credentials to the API and it returned 200
                 loginBtn.isEnabled = false
