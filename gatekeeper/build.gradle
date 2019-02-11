@@ -17,7 +17,7 @@ ext {
     siteUrl = 'https://github.com/jecsan/gatekeeper'
     gitUrl = 'https://github.com/jecsan/gatekeeper.git'
 
-    libraryVersion = '0.1.7'
+    libraryVersion = '0.1.8'
 
     developerId = 'dyoed'
     developerName = 'Jose S'
