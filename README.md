@@ -1,13 +1,18 @@
 # GateKeeper
  Easier account management. 
+ Get gatekeeper instance:
+ 
+ ``` kotlin
+  val gateKeeper = GateKeeper(context)
+```
 
 #### Save user credentials
 ``` kotlin
-  GateKeeper.enter(accountName: String, password: String?, authToken: String, userData: Bundle?) 
+  gateKeeper.enter(accountName: String, password: String?, authToken: String, userData: Bundle?) 
   ```
 #### Clear saved user credentials
 ``` kotlin
-  GateKeeper.logout()
+  gateKeeper.logout()
 ```
 ## Usage
 ```groovy
