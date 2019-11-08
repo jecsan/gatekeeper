@@ -16,7 +16,6 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
     private static final String ARG_AUTH_TYPE = "arg_auth_type";
     private static final String ARG_IS_ADDING_NEW_ACCOUNT = "is_adding_new_account";
 
-    private static final String AUTHTOKEN_TYPE_READ_ONLY = "authtoken_type_read_only";
     static final String AUTHTOKEN_TYPE_FULL_ACCESS = "authtoken_type_full_access";
 
     private final Context context;
@@ -55,7 +54,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
     @Override
     public Bundle getAuthToken(AccountAuthenticatorResponse response, Account account, String authTokenType, Bundle options) {
 
-        if (!authTokenType.equals(AUTHTOKEN_TYPE_READ_ONLY) && !authTokenType.equals(AUTHTOKEN_TYPE_FULL_ACCESS)) {
+        if (!authTokenType.equals(AUTHTOKEN_TYPE_FULL_ACCESS)) {
             final Bundle result = new Bundle();
             result.putString(AccountManager.KEY_ERROR_MESSAGE, "invalid authTokenType");
             return result;
