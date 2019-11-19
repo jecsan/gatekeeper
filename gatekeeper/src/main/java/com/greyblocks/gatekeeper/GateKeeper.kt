@@ -5,22 +5,22 @@ import android.accounts.AccountManager
 import android.app.Activity
 import android.content.Context
 import android.os.Build
+import android.util.Log
+import java.lang.reflect.ParameterizedType
+import java.lang.reflect.Type
+import kotlin.reflect.KClass
 
 
 @Suppress("unused")
 open class GateKeeper(context: Context, accountType: Int = R.string.account_type) {
 
-    var userConverter: UserAccountConverter<Any, Any>? = null
+    companion object {
+        const val TAG = "GateKeeper"
+    }
+
     private val accountManager: AccountManager = AccountManager.get(context)
     private val accountType: String = context.getString(accountType)
-    private val preference = context.getSharedPreferences("gatekeeper", Context.MODE_PRIVATE)
-
-    @Suppress("UNCHECKED_CAST")
-    fun <T : Any> getUserAccount() = userConverter?.getUserAccount(this) as T
-
-    fun <T : Any> saveUserAccount(account: T) {
-        userConverter?.saveUserAccount(account, this)
-    }
+    private val preference = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
 
     fun getCurrentAccount(): Account? {
         val accounts = accountManager.getAccountsByType(accountType)
@@ -43,114 +43,6 @@ open class GateKeeper(context: Context, accountType: Int = R.string.account_type
         }
         accountManager.addAccountExplicitly(Account(user, accountType), password, null)
         accountManager.setAuthToken(getCurrentAccount(), AccountAuthenticator.AUTHTOKEN_TYPE_FULL_ACCESS, authToken)
-    }
-
-
-    /**
-     * Key-Value pair
-     */
-    fun saveStringData(vararg keyValue: Pair<String, String>) {
-        val editor = preference.edit()
-        keyValue.forEach {
-            editor.putString(it.first, it.second)
-        }
-        editor.apply()
-    }
-
-    /**
-     * Key-Value pair
-     */
-    fun saveIntData(vararg keyValue: Pair<String, Int>) {
-        val editor = preference.edit()
-        keyValue.forEach {
-            editor.putInt(it.first, it.second)
-        }
-        editor.apply()
-    }
-
-    /**
-     * Key-Value pair
-     */
-    fun saveLongData(vararg keyValue: Pair<String, Long>) {
-        val editor = preference.edit()
-        keyValue.forEach {
-            editor.putLong(it.first, it.second)
-        }
-        editor.apply()
-    }
-
-    fun saveList(key: String, vararg values: Int) {
-        val editor = preference.edit()
-        editor.putStringSet(key, values.map { it.toString() }.toSet())
-        editor.apply()
-    }
-
-    fun saveList(key: String, vararg values: Long) {
-        val editor = preference.edit()
-        editor.putStringSet(key, values.map { it.toString() }.toSet())
-        editor.apply()
-    }
-
-    fun saveList(key: String, vararg values: Float) {
-        val editor = preference.edit()
-        editor.putStringSet(key, values.map { it.toString() }.toSet())
-        editor.apply()
-    }
-
-    fun saveList(key: String, vararg values: String) {
-        val editor = preference.edit()
-        editor.putStringSet(key, values.toSet())
-        editor.apply()
-    }
-
-    fun saveUserData(key: String, value: Boolean) {
-        preference.edit().putBoolean(key, value).apply()
-    }
-
-    fun saveUserData(key: String, value: Int) {
-        preference.edit().putInt(key, value).apply()
-    }
-
-    fun saveUserData(key: String, value: String) {
-        preference.edit().putString(key, value).apply()
-    }
-
-    fun getUserData(key: String, defaultData: String? = null): String? {
-        return preference.getString(key, defaultData)
-    }
-
-    fun getLong(key: String): Long {
-        return preference.getLong(key, 0)
-    }
-
-    fun getInt(key: String): Int {
-        return preference.getInt(key, 0)
-    }
-
-    fun getBoolean(key: String): Boolean {
-        return preference.getBoolean(key, false)
-    }
-
-    fun getStringList(key: String): List<String>? {
-        return preference.getStringSet(key, null)?.toList()
-    }
-
-    fun getIntList(key: String): List<Int>? {
-        return preference.getStringSet(key, null)?.map {
-            it.toInt()
-        }?.toList()
-    }
-
-    fun getLongList(key: String): List<Long>? {
-        return preference.getStringSet(key, null)?.map {
-            it.toLong()
-        }?.toList()
-    }
-
-    fun getFloatList(key: String): List<Float>? {
-        return preference.getStringSet(key, null)?.map {
-            it.toFloat()
-        }?.toList()
     }
 
     fun logout() {
@@ -181,6 +73,158 @@ open class GateKeeper(context: Context, accountType: Int = R.string.account_type
                     null, null)
             activity.finishAffinity()
         }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun saveList(name: String, list: List<*>, itemType: Class<*>) {
+
+        when (itemType) {
+            String::class.javaObjectType -> {
+                preference.edit().putStringSet(name, (list as List<String>).toTypedArray().toSet())
+                        .apply()
+            }
+            Int::class.javaObjectType -> {
+                val convertedList = (list as List<Int>).map {
+                    it.toString()
+                }
+                preference.edit().putStringSet(name, convertedList.toTypedArray().toSet())
+                        .apply()
+            }
+            Float::class.javaObjectType -> {
+                val convertedList = (list as List<Float>).map {
+                    it.toString()
+                }
+                preference.edit().putStringSet(name, convertedList.toTypedArray().toSet())
+                        .apply()
+            }
+            Boolean::class.javaObjectType -> {
+                val convertedList = (list as List<Boolean>).map {
+                    it.toString()
+                }
+                preference.edit().putStringSet(name, convertedList.toTypedArray().toSet())
+                        .apply()
+            }
+
+            Long::class.javaObjectType -> {
+                val convertedList = (list as List<Long>).map {
+                    it.toString()
+                }
+                preference.edit().putStringSet(name, convertedList.toTypedArray().toSet())
+                        .apply()
+            }
+
+        }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun getList(name: String, itemType: Type): List<Any>? {
+        val stringSet = preference.getStringSet(name, null)
+
+        return when (itemType) {
+            String::class.javaObjectType -> {
+                stringSet?.toList()
+            }
+            Int::class.javaObjectType -> {
+                stringSet?.map { it.toInt() }?.toList()
+
+            }
+            Float::class.javaObjectType -> {
+                stringSet?.map { it.toFloat() }?.toList()
+            }
+            Long::class.javaObjectType -> {
+                stringSet?.map { it.toLong() }?.toList()
+            }
+            Boolean::class.javaObjectType->{
+                stringSet?.map { it.toBoolean() }?.toList()
+
+            }
+            else -> null
+
+        }
+    }
+
+
+    fun saveAccount(account: Any) {
+
+        require(account::class.java.isAnnotationPresent(UserAccount::class.java)) { "Class is not recognized as @UserAccount" }
+
+        account.javaClass.declaredFields.forEach {
+            it.isAccessible = true
+            val name = it.name
+            val type: Class<*> = it.type
+            val value = (it.get(account))
+
+            when (type) {
+                String::class.java -> preference.edit().putString(name, value as String).apply()
+                Long::class.javaPrimitiveType -> preference.edit().putLong(name, value as Long).apply()
+                Int::class.javaPrimitiveType -> preference.edit().putInt(name, value as Int).apply()
+                Boolean::class.javaPrimitiveType -> preference.edit().putBoolean(name, value as Boolean).apply()
+                Float::class.javaPrimitiveType -> preference.edit().putFloat(name, value as Float).apply()
+                List::class.java -> {
+                    val itemType = (it.genericType as ParameterizedType).actualTypeArguments[0]
+                    if (value != null) {
+                        saveList(name, value as List<*>, itemType as Class<*>)
+                    }
+                    Log.i(TAG, "List item type: $itemType")
+                }
+                else -> Log.w(TAG, "Cannot save value for ${it.name}")
+
+
+            }
+        }
+    }
+
+    fun <T> getAccount(accountClass: Class<T>): T {
+
+        require(isLoggedIn()){"User not logged in"}
+
+        require(accountClass.isAnnotationPresent(UserAccount::class.java)) { "Class is not recognized as @UserAccount" }
+
+        val instance = accountClass.newInstance()
+        accountClass.declaredFields.forEach {
+            it.isAccessible = true
+            val name = it.name
+
+            when (it.type) {
+                String::class.java -> {
+                    val value = preference.getString(it.name, null)
+                    it.set(instance, value)
+                }
+                Long::class.javaPrimitiveType -> {
+                    val value = preference.getLong(it.name, 0L)
+                    it.set(instance, value)
+                }
+
+                Int::class.javaPrimitiveType -> {
+                    val value = preference.getInt(it.name, 0)
+                    it.set(instance, value)
+                }
+
+                Boolean::class.javaPrimitiveType -> {
+                    val value = preference.getBoolean(it.name, false)
+                    it.set(instance, value)
+                }
+
+
+                Float::class.javaPrimitiveType -> {
+                    val value = preference.getFloat(it.name, 0f)
+                    it.set(instance, value)
+                }
+
+
+                List::class.java -> {
+                    val itemType = (it.genericType as ParameterizedType).actualTypeArguments[0]
+
+                    it.set(instance, getList(name, itemType))
+                }
+
+                else -> {
+                    Log.w(TAG, "Cannot get value for ${it.name}")
+                }
+            }
+        }
+
+        return instance
     }
 
 

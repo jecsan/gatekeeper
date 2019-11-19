@@ -1,9 +1,9 @@
 package com.greyblocks.gatekeepersample
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.greyblocks.gatekeeper.GateKeeper
-import com.greyblocks.gatekeeper.UserAccountConverter
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -20,21 +20,21 @@ class MainActivity : AppCompatActivity() {
         logoutBtn.setOnClickListener {
             gateKeeper.logout()
             gateKeeper.requireLogin(this)
-            gateKeeper.saveUserAccount(1)
-           val fg:String =  gateKeeper.getUserAccount()
 
-            val acc:String = gateKeeper.getUserAccount()
-
-            object: UserAccountConverter<Int,String>{
-                override fun getUserAccount(gateKeeper: GateKeeper): String {
-                    TODO()
-                }
-
-                override fun saveUserAccount(userAccount: Int, gateKeeper: GateKeeper) {
-                }
-
-            }
         }
+
+        val userAccount = MyAccount()
+        userAccount.id = 4
+        userAccount.name = "John"
+        userAccount.ids = arrayListOf(2L, 5L)
+
+
+        gateKeeper.saveAccount(userAccount)
+
+        val account:MyAccount = gateKeeper.getAccount(MyAccount::class.java)
+
+        Log.d("Joed", "Saved account: $account")
+
     }
 
     override fun onResume() {
@@ -43,6 +43,7 @@ class MainActivity : AppCompatActivity() {
 
 
         gateKeeper.requireLogin(this)
+
 
     }
 
