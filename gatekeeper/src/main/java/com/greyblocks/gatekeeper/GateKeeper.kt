@@ -14,11 +14,9 @@ import kotlin.reflect.KClass
 @Suppress("unused")
 open class GateKeeper(context: Context, accountType: Int = R.string.account_type) {
 
-
     companion object {
         const val TAG = "GateKeeper"
     }
-
 
     private val accountManager: AccountManager = AccountManager.get(context)
     private val accountType: String = context.getString(accountType)
@@ -78,29 +76,36 @@ open class GateKeeper(context: Context, accountType: Int = R.string.account_type
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun saveList(name: String, list: List<*>, itemType: KClass<*>) {
+    private fun saveList(name: String, list: List<*>, itemType: Class<*>) {
 
         when (itemType) {
-//            String::class -> {
-//                preference.edit().putStringSet(name, (list as List<String>).toTypedArray().toSet())
-//                        .apply()
-//            }
-//            Int::class -> {
-//                val convertedList = (list as List<Int>).map {
-//                    it.toString()
-//                }
-//                preference.edit().putStringSet(name, convertedList.toTypedArray().toSet())
-//                        .apply()
-//            }
-//            Float::class -> {
-//                val convertedList = (list as List<Float>).map {
-//                    it.toString()
-//                }
-//                preference.edit().putStringSet(name, convertedList.toTypedArray().toSet())
-//                        .apply()
-//
-//            }
-            Long::class-> {
+            String::class.javaObjectType -> {
+                preference.edit().putStringSet(name, (list as List<String>).toTypedArray().toSet())
+                        .apply()
+            }
+            Int::class.javaObjectType -> {
+                val convertedList = (list as List<Int>).map {
+                    it.toString()
+                }
+                preference.edit().putStringSet(name, convertedList.toTypedArray().toSet())
+                        .apply()
+            }
+            Float::class.javaObjectType -> {
+                val convertedList = (list as List<Float>).map {
+                    it.toString()
+                }
+                preference.edit().putStringSet(name, convertedList.toTypedArray().toSet())
+                        .apply()
+            }
+            Boolean::class.javaObjectType -> {
+                val convertedList = (list as List<Boolean>).map {
+                    it.toString()
+                }
+                preference.edit().putStringSet(name, convertedList.toTypedArray().toSet())
+                        .apply()
+            }
+
+            Long::class.javaObjectType -> {
                 val convertedList = (list as List<Long>).map {
                     it.toString()
                 }
@@ -115,19 +120,23 @@ open class GateKeeper(context: Context, accountType: Int = R.string.account_type
     private fun getList(name: String, itemType: Type): List<Any>? {
         val stringSet = preference.getStringSet(name, null)
 
-        return when (itemType::class.java) {
-            String::class.java -> {
+        return when (itemType) {
+            String::class.javaObjectType -> {
                 stringSet?.toList()
             }
-            Int::class.java -> {
+            Int::class.javaObjectType -> {
                 stringSet?.map { it.toInt() }?.toList()
 
             }
-            Float::class.java -> {
+            Float::class.javaObjectType -> {
                 stringSet?.map { it.toFloat() }?.toList()
             }
-            Long::class.java-> {
+            Long::class.javaObjectType -> {
                 stringSet?.map { it.toLong() }?.toList()
+            }
+            Boolean::class.javaObjectType->{
+                stringSet?.map { it.toBoolean() }?.toList()
+
             }
             else -> null
 
@@ -147,13 +156,15 @@ open class GateKeeper(context: Context, accountType: Int = R.string.account_type
 
             when (type) {
                 String::class.java -> preference.edit().putString(name, value as String).apply()
-                Long::class.java -> preference.edit().putLong(name, value as Long).apply()
-                Int::class.java -> preference.edit().putInt(name, value as Int).apply()
-                Boolean::class.java -> preference.edit().putBoolean(name, value as Boolean).apply()
-                Float::class.java -> preference.edit().putFloat(name, value as Float).apply()
+                Long::class.javaPrimitiveType -> preference.edit().putLong(name, value as Long).apply()
+                Int::class.javaPrimitiveType -> preference.edit().putInt(name, value as Int).apply()
+                Boolean::class.javaPrimitiveType -> preference.edit().putBoolean(name, value as Boolean).apply()
+                Float::class.javaPrimitiveType -> preference.edit().putFloat(name, value as Float).apply()
                 List::class.java -> {
                     val itemType = (it.genericType as ParameterizedType).actualTypeArguments[0]
-                    saveList(name, value as List<*>, itemType as KClass<*>)
+                    if (value != null) {
+                        saveList(name, value as List<*>, itemType as Class<*>)
+                    }
                     Log.i(TAG, "List item type: $itemType")
                 }
                 else -> Log.w(TAG, "Cannot save value for ${it.name}")
@@ -164,6 +175,8 @@ open class GateKeeper(context: Context, accountType: Int = R.string.account_type
     }
 
     fun <T> getAccount(accountClass: Class<T>): T {
+
+        require(isLoggedIn()){"User not logged in"}
 
         require(accountClass.isAnnotationPresent(UserAccount::class.java)) { "Class is not recognized as @UserAccount" }
 
@@ -177,10 +190,32 @@ open class GateKeeper(context: Context, accountType: Int = R.string.account_type
                     val value = preference.getString(it.name, null)
                     it.set(instance, value)
                 }
+                Long::class.javaPrimitiveType -> {
+                    val value = preference.getLong(it.name, 0L)
+                    it.set(instance, value)
+                }
 
-                List::class.java->{
+                Int::class.javaPrimitiveType -> {
+                    val value = preference.getInt(it.name, 0)
+                    it.set(instance, value)
+                }
+
+                Boolean::class.javaPrimitiveType -> {
+                    val value = preference.getBoolean(it.name, false)
+                    it.set(instance, value)
+                }
+
+
+                Float::class.javaPrimitiveType -> {
+                    val value = preference.getFloat(it.name, 0f)
+                    it.set(instance, value)
+                }
+
+
+                List::class.java -> {
                     val itemType = (it.genericType as ParameterizedType).actualTypeArguments[0]
-                    getList(name, itemType)
+
+                    it.set(instance, getList(name, itemType))
                 }
 
                 else -> {
