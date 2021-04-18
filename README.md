@@ -6,6 +6,8 @@
   val gateKeeper = GateKeeper(context)
 ```
 
+maven{url "https://codecodecoffee.jfrog.io/artifactory/codecodecoffee-gradle-dev"}
+
 #### Save user credentials
 ``` kotlin
   gateKeeper.enter(accountName: String, authToken: String, userData: Bundle?) 
