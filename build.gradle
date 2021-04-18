@@ -27,6 +27,8 @@ allprojects {
         //noinspection JcenterRepositoryObsolete
 //        jcenter()
         google()
+        maven { url "https://codecodecoffee.jfrog.io/ui/#/builds/gatekeeper/1618744122597" }
+
         mavenCentral()
     }
 }
