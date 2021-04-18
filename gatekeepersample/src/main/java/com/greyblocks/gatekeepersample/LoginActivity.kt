@@ -25,7 +25,7 @@ class LoginActivity : AppCompatActivity() {
                 //Note: Password is nullable, and it is advisable not to save any password
                 //If you really need to save it, atleast encrypt before saving
                 Handler(Looper.getMainLooper()).postDelayed({
-                    gateKeeper.enter(userNameInput.getText(),passwordInput.getText(),
+                    gateKeeper.enter(userNameInput.getText(),
                             "someauthtoken_skdfksdgfjsd")
 
                     startActivity(Intent(this, MainActivity::class.java))

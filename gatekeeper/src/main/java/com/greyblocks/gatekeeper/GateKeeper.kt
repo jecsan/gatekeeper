@@ -5,24 +5,32 @@ import android.accounts.AccountManager
 import android.app.Activity
 import android.content.Context
 import android.os.Build
-import android.util.Log
-import java.lang.reflect.ParameterizedType
-import java.lang.reflect.Type
-import kotlin.reflect.KClass
+import android.view.animation.AnimationUtils
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 
-@Suppress("unused")
 open class GateKeeper(context: Context, accountType: Int = R.string.account_type) {
 
     companion object {
         const val TAG = "GateKeeper"
+        const val ACCOUNT = "gatekeeper-account"
     }
 
     private val accountManager: AccountManager = AccountManager.get(context)
     private val accountType: String = context.getString(accountType)
-    private val preference = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
 
-    fun getCurrentAccount(): Account? {
+    @PublishedApi
+    internal val json: Json = Json {
+        isLenient = true
+        encodeDefaults = true
+    }
+
+    @PublishedApi
+    internal val preference = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
+
+    private fun getCurrentAccount(): Account? {
         val accounts = accountManager.getAccountsByType(accountType)
         if (accounts.isNotEmpty()) {
             return accounts[0]
@@ -33,17 +41,36 @@ open class GateKeeper(context: Context, accountType: Int = R.string.account_type
 
     fun getAuthToken(): String? {
         val account = getCurrentAccount()
-        return account?.let { accountManager.peekAuthToken(getCurrentAccount(), AccountAuthenticator.AUTHTOKEN_TYPE_FULL_ACCESS) }
+        return account?.let {
+            accountManager.peekAuthToken(
+                getCurrentAccount(),
+                AccountAuthenticator.AUTHTOKEN_TYPE_FULL_ACCESS
+            )
+        }
     }
 
 
-    fun enter(user: String, password: String?, authToken: String) {
+    fun enter(user: String, authToken: String) {
         if (getCurrentAccount() != null) {
             logout()
         }
-        accountManager.addAccountExplicitly(Account(user, accountType), password, null)
-        accountManager.setAuthToken(getCurrentAccount(), AccountAuthenticator.AUTHTOKEN_TYPE_FULL_ACCESS, authToken)
+        accountManager.addAccountExplicitly(Account(user, accountType), null, null)
+        accountManager.setAuthToken(
+            getCurrentAccount(),
+            AccountAuthenticator.AUTHTOKEN_TYPE_FULL_ACCESS,
+            authToken
+        )
     }
+
+    fun refresh(authToken: String) {
+        if (getCurrentAccount() == null) throw (IllegalStateException("User is not logged in"))
+        accountManager.setAuthToken(
+            getCurrentAccount(),
+            AccountAuthenticator.AUTHTOKEN_TYPE_FULL_ACCESS,
+            authToken
+        )
+    }
+
 
     fun logout() {
 
@@ -69,163 +96,29 @@ open class GateKeeper(context: Context, accountType: Int = R.string.account_type
      */
     fun requireLogin(activity: Activity) {
         if (!isLoggedIn()) {
-            accountManager.addAccount(accountType, AccountAuthenticator.AUTHTOKEN_TYPE_FULL_ACCESS, null, null, activity,
-                    null, null)
+            accountManager.addAccount(
+                accountType, AccountAuthenticator.AUTHTOKEN_TYPE_FULL_ACCESS, null, null, activity,
+                null, null
+            )
             activity.finishAffinity()
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
-    private fun saveList(name: String, list: List<*>, itemType: Class<*>) {
 
-        when (itemType) {
-            String::class.javaObjectType -> {
-                preference.edit().putStringSet(name, (list as List<String>).toTypedArray().toSet())
-                        .apply()
-            }
-            Int::class.javaObjectType -> {
-                val convertedList = (list as List<Int>).map {
-                    it.toString()
-                }
-                preference.edit().putStringSet(name, convertedList.toTypedArray().toSet())
-                        .apply()
-            }
-            Float::class.javaObjectType -> {
-                val convertedList = (list as List<Float>).map {
-                    it.toString()
-                }
-                preference.edit().putStringSet(name, convertedList.toTypedArray().toSet())
-                        .apply()
-            }
-            Boolean::class.javaObjectType -> {
-                val convertedList = (list as List<Boolean>).map {
-                    it.toString()
-                }
-                preference.edit().putStringSet(name, convertedList.toTypedArray().toSet())
-                        .apply()
-            }
-
-            Long::class.javaObjectType -> {
-                val convertedList = (list as List<Long>).map {
-                    it.toString()
-                }
-                preference.edit().putStringSet(name, convertedList.toTypedArray().toSet())
-                        .apply()
-            }
-
-        }
+    inline fun <reified T>getAccount(): T{
+        if(!isLoggedIn()) throw IllegalStateException("You are not logged in")
+        return json.decodeFromString(preference.getString(ACCOUNT, null) ?: "")
     }
 
-    @Suppress("UNCHECKED_CAST")
-    private fun getList(name: String, itemType: Type): List<Any>? {
-        val stringSet = preference.getStringSet(name, null)
+    inline fun <reified T>saveAccount(account: T) {
+        require(T::class.java.isAnnotationPresent(UserAccount::class.java)) { "Class is not recognized as @UserAccount" }
 
-        return when (itemType) {
-            String::class.javaObjectType -> {
-                stringSet?.toList()
-            }
-            Int::class.javaObjectType -> {
-                stringSet?.map { it.toInt() }?.toList()
-
-            }
-            Float::class.javaObjectType -> {
-                stringSet?.map { it.toFloat() }?.toList()
-            }
-            Long::class.javaObjectType -> {
-                stringSet?.map { it.toLong() }?.toList()
-            }
-            Boolean::class.javaObjectType->{
-                stringSet?.map { it.toBoolean() }?.toList()
-
-            }
-            else -> null
-
-        }
+        val jsonString = json.encodeToString(account)
+        preference.edit().putString(ACCOUNT, jsonString).apply()
     }
 
 
-    fun saveAccount(account: Any) {
 
-        require(account::class.java.isAnnotationPresent(UserAccount::class.java)) { "Class is not recognized as @UserAccount" }
-
-        account.javaClass.declaredFields.forEach {
-            it.isAccessible = true
-            val name = it.name
-            val type: Class<*> = it.type
-            val value = (it.get(account))
-
-            when (type) {
-                String::class.java -> preference.edit().putString(name, value as String).apply()
-                Long::class.javaPrimitiveType -> preference.edit().putLong(name, value as Long).apply()
-                Int::class.javaPrimitiveType -> preference.edit().putInt(name, value as Int).apply()
-                Boolean::class.javaPrimitiveType -> preference.edit().putBoolean(name, value as Boolean).apply()
-                Float::class.javaPrimitiveType -> preference.edit().putFloat(name, value as Float).apply()
-                List::class.java -> {
-                    val itemType = (it.genericType as ParameterizedType).actualTypeArguments[0]
-                    if (value != null) {
-                        saveList(name, value as List<*>, itemType as Class<*>)
-                    }
-                    Log.i(TAG, "List item type: $itemType")
-                }
-                else -> Log.w(TAG, "Cannot save value for ${it.name}")
-
-
-            }
-        }
-    }
-
-    fun <T> getAccount(accountClass: Class<T>): T {
-
-        require(isLoggedIn()){"User not logged in"}
-
-        require(accountClass.isAnnotationPresent(UserAccount::class.java)) { "Class is not recognized as @UserAccount" }
-
-        val instance = accountClass.newInstance()
-        accountClass.declaredFields.forEach {
-            it.isAccessible = true
-            val name = it.name
-
-            when (it.type) {
-                String::class.java -> {
-                    val value = preference.getString(it.name, null)
-                    it.set(instance, value)
-                }
-                Long::class.javaPrimitiveType -> {
-                    val value = preference.getLong(it.name, 0L)
-                    it.set(instance, value)
-                }
-
-                Int::class.javaPrimitiveType -> {
-                    val value = preference.getInt(it.name, 0)
-                    it.set(instance, value)
-                }
-
-                Boolean::class.javaPrimitiveType -> {
-                    val value = preference.getBoolean(it.name, false)
-                    it.set(instance, value)
-                }
-
-
-                Float::class.javaPrimitiveType -> {
-                    val value = preference.getFloat(it.name, 0f)
-                    it.set(instance, value)
-                }
-
-
-                List::class.java -> {
-                    val itemType = (it.genericType as ParameterizedType).actualTypeArguments[0]
-
-                    it.set(instance, getList(name, itemType))
-                }
-
-                else -> {
-                    Log.w(TAG, "Cannot get value for ${it.name}")
-                }
-            }
-        }
-
-        return instance
-    }
 
 
 }

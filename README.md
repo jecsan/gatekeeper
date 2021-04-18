@@ -8,7 +8,7 @@
 
 #### Save user credentials
 ``` kotlin
-  gateKeeper.enter(accountName: String, password: String?, authToken: String, userData: Bundle?) 
+  gateKeeper.enter(accountName: String, authToken: String, userData: Bundle?) 
   ```
 #### Clear saved user credentials
 ``` kotlin
@@ -18,7 +18,7 @@
 ```groovy
     dependencies{
     
-      implementation 'com.greyblocks:gatekeeper:0.1.8'
+    implementation  'com.codecodecoffee:gatekeeper:1.0.0-alpha4@aar'
       
     }
   
@@ -51,4 +51,19 @@ class SampleApp : Application(), Gate {
 ```
 
 
-#### Note: Please do not store plaintext passwords, or do not store password at all.
+#### Optional - Saving account details using @UserAccount and @Serializable(kotlinx-serialization)
+Setup kotlinx-serialization:
+1. https://github.com/Kotlin/kotlinx.serialization
+2. Create a class for your account details;
+```kotlin
+@UserAccount
+@Serializable
+data class MyAccount(val id:Int, var name:String)
+
+//Save
+gateKeeper.saveAccount(MyAccount(1,"Jeff"))
+
+//Get
+val account:MyAccount = gateKeeper.getAccount()
+
+```

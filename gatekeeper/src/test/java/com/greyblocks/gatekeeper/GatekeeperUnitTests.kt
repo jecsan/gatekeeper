@@ -39,11 +39,12 @@ class GatekeeperUnitTests {
         userAccount.ids = arrayListOf(2L, 5L)
         userAccount.ints = arrayListOf(22, 33)
         userAccount.bools = arrayListOf(false, true)
-        userAccount.floats = arrayListOf(10.2f,2.2f)
-        userAccount.strings = arrayListOf("hmm","hmm2")
+        userAccount.floats = arrayListOf(10.2f, 2.2f)
+        userAccount.strings = arrayListOf("hmm", "hmm2")
+        gateKeeper.enter("test", "tokenzzz")
 
         gateKeeper.saveAccount(userAccount)
-        val account:MyAccount = gateKeeper.getAccount(MyAccount::class.java)
+        val account: MyAccount = gateKeeper.getAccount() as MyAccount
 
         assert(account.ids == userAccount.ids)
         assert(account.floats == userAccount.floats)
@@ -74,9 +75,22 @@ class GatekeeperUnitTests {
         val userAccount = MyAccount()
         userAccount.id = 4
         userAccount.name = "John"
+        gateKeeper.enter("test", "tokenzzz")
 
         gateKeeper.saveAccount(userAccount)
-        val account:MyAccount = gateKeeper.getAccount(MyAccount::class.java)
+        val account: MyAccount = gateKeeper.getAccount() as MyAccount
+
+        assert(userAccount.name == account.name)
+        assert(userAccount.id == account.id)
+    }
+
+    @Test
+    fun test_saveAccount_NoDefaultConstructor_success() {
+        val userAccount = MyAccount4("John", 4)
+        gateKeeper.enter("test", "tokenzzz")
+
+        gateKeeper.saveAccount(userAccount)
+        val account: MyAccount4 = gateKeeper.getAccount()
 
         assert(userAccount.name == account.name)
         assert(userAccount.id == account.id)
@@ -84,8 +98,8 @@ class GatekeeperUnitTests {
 
 
     @Test
-    fun test_getUserWhenLoggedOut_throwError(){
-        gateKeeper.enter("test",null,"tokenzzz")
+    fun test_getUserWhenLoggedOut_throwError() {
+        gateKeeper.enter("test", "tokenzzz")
         val userAccount = MyAccount()
         userAccount.id = 4
         userAccount.name = "John"
@@ -93,17 +107,19 @@ class GatekeeperUnitTests {
         gateKeeper.saveAccount(userAccount)
         gateKeeper.logout()
 
-        val result = kotlin.runCatching {  gateKeeper.getAccount(MyAccount::class.java)}
-        assert(result.isFailure )
+        val result = kotlin.runCatching {
+            val account: MyAccount = gateKeeper.getAccount()
+        }
+        assert(result.isFailure)
 
     }
 
     @Test
-    fun test_displayProperStatus(){
+    fun test_displayProperStatus() {
 
         assert(!gateKeeper.isLoggedIn())
 
-        gateKeeper.enter("test",null,"tokenzzz")
+        gateKeeper.enter("test", "tokenzzz")
         val userAccount = MyAccount()
         userAccount.id = 4
         userAccount.name = "John"
@@ -117,9 +133,38 @@ class GatekeeperUnitTests {
 
     }
 
+    @Test
+    fun `test refresh token`() {
+
+        gateKeeper.enter("test", "tokenzzz")
+
+        assert(gateKeeper.isLoggedIn())
+
+        gateKeeper.refresh("tokenzzzzzz")
+
+        assert(gateKeeper.getAuthToken() == "tokenzzzzzz")
+        assert(gateKeeper.isLoggedIn())
+
+    }
+
 
     @Test
-    fun test_nullAccountWhenLoggedOut(){
+    fun test_crashGetAccountWhenLoggedOut() {
+        gateKeeper.enter("test", "tokenzzz")
+        val userAccount = MyAccount()
+        userAccount.id = 4
+        userAccount.name = "John"
+        gateKeeper.saveAccount(userAccount)
+        gateKeeper.logout()
+
+        try {
+            val nulLAccount: MyAccount = gateKeeper.getAccount()
+
+        } catch (e: IllegalStateException) {
+            assert(true)
+
+        }
+
 //        val account = gateKeeper.getCurrentAccount()
     }
 }

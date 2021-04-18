@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity() {
 
         gateKeeper = GateKeeper(application)
 
-        userTv.text = "Logged in as ${gateKeeper.getCurrentAccount()?.name}\n\n AuthToken: ${gateKeeper.getAuthToken()}"
+        userTv.text = "Logged in:\n\n AuthToken: ${gateKeeper.getAuthToken()}"
 
         logoutBtn.setOnClickListener {
             gateKeeper.logout()
@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
 
         gateKeeper.saveAccount(userAccount)
 
-        val account:MyAccount = gateKeeper.getAccount(MyAccount::class.java)
+        val account:MyAccount = gateKeeper.getAccount()
 
         Log.d("Joed", "Saved account: $account")
 
