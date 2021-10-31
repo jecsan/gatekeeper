@@ -36,5 +36,25 @@
       <option name="name" value="artifactory-maven-resolver" />
       <option name="url" value="https://codecodecoffee.jfrog.io/artifactory/codecodecoffee-gradle-dev" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven" />
+      <option name="name" value="maven" />
+      <option name="url" value="https://codecodecoffee.jfrog.io/ui/#/builds/gatekeeper/1618744122597" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="AndroidLibForArtifactory" />
+      <option name="name" value="AndroidLibForArtifactory" />
+      <option name="url" value="https://maven.pkg.github.com/jecsan/AndroidLibForArtifactory" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="MavenLocal" />
+      <option name="name" value="MavenLocal" />
+      <option name="url" value="file:/C:/Users/Jose%20Edwin%20Santiago/.m2/repository/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="AndroidLibForArtifactory" />
+      <option name="name" value="AndroidLibForArtifactory" />
+      <option name="url" value="https://maven.pkg.github.com/jecsan/gatekeeper" />
+    </remote-repository>
   </component>
 </project>
