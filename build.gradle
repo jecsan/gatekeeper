@@ -2,7 +2,7 @@
 
 
 buildscript {
-    ext.kotlin_version = '1.5.31'
+    ext.kotlin_version = '1.7.10'
     repositories {
         google()
         //noinspection JcenterRepositoryObsolete
@@ -10,10 +10,10 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.3'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.android.tools.build:gradle:7.2.1'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.10"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
-        classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:4.20.0'
+//        classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:4.20.0'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -24,16 +24,16 @@ buildscript {
 allprojects {
     repositories {
         google()
-jcenter()
-        mavenLocal()
-        maven {
-            name = "AndroidLibForArtifactory"
-            url = uri("https://maven.pkg.github.com/jecsan/gatekeeper")
-            credentials {
-                username = System.getenv('GITHUB_USER') ?: project.properties['GITHUB_USER']
-                password = System.getenv('GITHUB_PERSONAL_ACCESS_TOKEN') ?: project.properties['GITHUB_PERSONAL_ACCESS_TOKEN']
-            }
-        }
+//        mavenLocal()
+//        maven {
+//            name = "AndroidLibForArtifactory"
+//            url = uri("https://maven.pkg.github.com/jecsan/gatekeeper")
+//            credentials {
+//                username = System.getenv('GITHUB_USER') ?: project.properties['GITHUB_USER']
+//                password = System.getenv('GITHUB_PERSONAL_ACCESS_TOKEN') ?: project.properties['GITHUB_PERSONAL_ACCESS_TOKEN']
+//            }
+//        }
+        mavenCentral()
     }
 }
 
