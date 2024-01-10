@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">GateKeeper</string>
+    <string name="account_type">gatekeeper_impl</string>
+    <string name="password">Password</string>
+    <string name="username">Username</string>
+    <string name="login">Login</string>
+    <string name="logout">Logout</string>
+</resources>
