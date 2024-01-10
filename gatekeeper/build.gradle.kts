@@ -7,6 +7,13 @@ android {
     namespace = "com.codecodecoffee.gatekeeper"
     compileSdk = 34
 
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
+
     defaultConfig {
         minSdk = 22
 
@@ -14,7 +21,6 @@ android {
         consumerProguardFiles("consumer-rules.pro")
 
 
-        resValue("string", "account_type", "")
     }
 
     buildTypes {
@@ -39,7 +45,9 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+    implementation(libs.core.ktx)
     testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }
