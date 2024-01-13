@@ -1,6 +1,18 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    id("maven-publish")
+}
+
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("release") {
+                from(components["release"])
+            }
+        }
+    }
 }
 
 android {
@@ -43,6 +55,9 @@ android {
     kotlin {
         jvmToolchain(17)
     }
+
+
+
 }
 
 dependencies {
