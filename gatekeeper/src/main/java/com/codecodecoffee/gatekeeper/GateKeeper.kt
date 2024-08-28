@@ -66,6 +66,39 @@ class GateKeeper(context: Context) : OnAccountsUpdateListener {
 
     }
 
+    fun enter(user: String, authToken: String, bundle: Bundle?) {
+        if (getCurrentAccount() != null) {
+            logout()
+        }
+        val result = accountManager.addAccountExplicitly(
+            Account(user, accountType), null, bundle
+        )
+        if (result) {
+
+            accountManager.setAuthToken(
+                getCurrentAccount(), AccountAuthenticator.AUTHTOKEN_TYPE_FULL_ACCESS, authToken
+            )
+        } else {
+            logout()
+        }
+    }
+
+    fun getUserData(key: String): String? {
+        return accountManager.getUserData(getCurrentAccount(), key)
+    }
+
+    fun getLong(key: String): Long {
+        return accountManager.getUserData(getCurrentAccount(), key)?.toLong() ?: 0
+    }
+
+    fun getInt(key: String): Int {
+        return accountManager.getUserData(getCurrentAccount(), key)?.toInt() ?: 0
+    }
+
+    fun setUserData(key: String, value: String) {
+        accountManager.setUserData(getCurrentAccount(), key, value)
+    }
+
     fun refresh(authToken: String) {
         if (getCurrentAccount() == null) throw (IllegalStateException("User is not logged in"))
         accountManager.setAuthToken(
