@@ -83,7 +83,7 @@ class GateKeeper(context: Context) : OnAccountsUpdateListener {
         }
     }
 
-    fun getUserData(key: String): String? {
+    fun getUserData(key: String, defaultValue: String): String? {
         return accountManager.getUserData(getCurrentAccount(), key)
     }
 
