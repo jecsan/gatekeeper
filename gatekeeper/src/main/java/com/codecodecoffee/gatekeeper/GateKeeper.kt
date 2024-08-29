@@ -83,16 +83,16 @@ class GateKeeper(context: Context) : OnAccountsUpdateListener {
         }
     }
 
-    fun getUserData(key: String, defaultValue: String?=null): String? {
+    fun getUserData(key: String, defaultValue: String? = null): String? {
         return accountManager.getUserData(getCurrentAccount(), key)
     }
 
     fun getLong(key: String): Long {
-        return accountManager.getUserData(getCurrentAccount(), key)?.toLong() ?: 0
+        return accountManager.getUserData(getCurrentAccount(), key)?.toLongOrNull() ?: 0
     }
 
     fun getInt(key: String): Int {
-        return accountManager.getUserData(getCurrentAccount(), key)?.toInt() ?: 0
+        return accountManager.getUserData(getCurrentAccount(), key)?.toIntOrNull() ?: 0
     }
 
     fun setUserData(key: String, value: String) {
